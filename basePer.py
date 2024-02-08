@@ -37,6 +37,10 @@ args = parser.parse_args()
 
 args.seq = args.seq.upper()
 
+if not re.match('^[ACGTU]+$', args.seq):
+    print('The sequence contains invalid characters. Only A, C, G, T, and U are allowed.')
+    sys.exit(1)
+
 if 'T' in args.seq and 'U' in args.seq:
     print('The sequence is not DNA nor RNA (both T and U present)')
 else:
