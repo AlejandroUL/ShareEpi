@@ -2,6 +2,8 @@ import sys
 import re
 from argparse import ArgumentParser
 
+#adding comment from Liz on the Alejandro file to mark as tested and approved
+
 def calculate_percentage(seq):
     total_bases = len(seq)
     a_count = seq.count('A')
