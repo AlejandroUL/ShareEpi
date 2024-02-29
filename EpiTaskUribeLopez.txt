@@ -1,0 +1,74 @@
+mkdir data 
+mkdir analyses
+
+
+download files
+../bin/download.metadata.sh https://www.encodeproject.org/metadata/?replicates.library.biosample.donor.uuid=d370683e-81e7-473f-8475-7716d027849b&status=released&status=submitted&status=in+progress&biosample_ontology.term_name=stomach&biosample_ontology.term_name=sigmoid+colon&assay_title=ATAC-seq&assay_slims=DNA+accessibility&type=Experiment
+
+
+mkdir data/bed.files
+
+
+cut -f1 analyses/bigBed.peaks.ids.txt |\
+while read filename; do
+  bigBedToBed data/bigBed.files/"$filename".bigBed data/bed.files/"$filename".bed
+done
+
+
+cut -f-2 analyses/bigBed.peaks.ids.txt |\
+while read filename tissue; do 
+  bedtools intersect -a annotation/gencode.v24.protein.coding.non.redundant.TSS.bed -b data/bed.files/"$filename".bed -u |\
+  cut -f7 |\
+  sort -u > analyses/peaks.analysis/genes.with.peaks."$tissue".H3K4me3.txt
+done
+
+cut -f-2 analyses/bigBed.peaks.ids.txt |\
+while read filename tissue; do 
+      bedtools intersect -wa -a data/bed.files/"$filename".bed -b ../ChIP-seq/annotation/gencode.v24.protein.coding.non.redundant.TSS.bed |\
+        sort -u > analyses/peaks.promoters."$tissue".ATAC.bed
+done
+
+head analyses/peaks.promoters.sigmoid_colon.ATAC.bed
+
+wc -l analyses/*.bed
+  47871 analyses/peaks.promoters.sigmoid_colon.ATAC.bed
+  44749 analyses/peaks.promoters.stomach.ATAC.bed
+  92620 total
+
+cut -f-2 analyses/bigBed.peaks.ids.txt |while read filename tissue; do bedtools
+intersect -b ../ChIP-seq/annotation/gencode.v24.protein.coding.gene.body.bed -a
+data/bed.files/"$filename".bed -v > analyses/peaksoutsidegene"$tissue".bed; done
+
+cut -f-2 analyses/bigBed.peaks.ids.txt |while read filename tissue; do bedtools intersect -b ../ChIP-seq/annotation/gencode.v24.protein.coding.gene.body.bed -a data/bed.files/"$filename".bed -v > analyses/outsidepeaks."$tissue".bed; done
+wc -l  analyses/outsidepeaks*
+  37035 analyses/outsidepeaks.sigmoid_colon.bed
+  34537 analyses/outsidepeaks.stomach.bed
+  71572 total
+
+
+
+##########################################################################
+##########################################################################
+##########################################################################
+
+TASK 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
